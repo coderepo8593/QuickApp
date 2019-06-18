@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace QuickApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20181215082109_Initial")]
-    partial class Initial
+    [Migration("20190618212848_InitialModel")]
+    partial class InitialModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -122,6 +122,52 @@ namespace QuickApp.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("DAL.Models.CarMake", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("AppCarMake");
+                });
+
+            modelBuilder.Entity("DAL.Models.CarModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CarMakeId");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CarMakeId");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("AppCarModel");
+                });
+
             modelBuilder.Entity("DAL.Models.Customer", b =>
                 {
                     b.Property<int>("Id")
@@ -164,7 +210,7 @@ namespace QuickApp.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("AppCustomers");
+                    b.ToTable("AppCustomer");
                 });
 
             modelBuilder.Entity("DAL.Models.Order", b =>
@@ -203,7 +249,7 @@ namespace QuickApp.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("AppOrders");
+                    b.ToTable("AppOrder");
                 });
 
             modelBuilder.Entity("DAL.Models.OrderDetail", b =>
@@ -240,7 +286,7 @@ namespace QuickApp.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("AppOrderDetails");
+                    b.ToTable("AppOrderDetail");
                 });
 
             modelBuilder.Entity("DAL.Models.Product", b =>
@@ -298,7 +344,7 @@ namespace QuickApp.Migrations
 
                     b.HasIndex("ProductCategoryId");
 
-                    b.ToTable("AppProducts");
+                    b.ToTable("AppProduct");
                 });
 
             modelBuilder.Entity("DAL.Models.ProductCategory", b =>
@@ -332,7 +378,7 @@ namespace QuickApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AppProductCategories");
+                    b.ToTable("AppProductCategory");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -419,6 +465,15 @@ namespace QuickApp.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("DAL.Models.CarModel", b =>
+                {
+                    b.HasOne("DAL.Models.CarMake", "CarMake")
+                        .WithMany("Models")
+                        .HasForeignKey("CarMakeId")
+                        .HasConstraintName("FK_Model_Make")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("DAL.Models.Order", b =>

@@ -13,6 +13,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using DAL.Models.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace DAL
 {
@@ -24,7 +27,8 @@ namespace DAL
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
-
+        public DbSet<CarMake> CarMakes { get; set; }
+        public DbSet<CarModel> CarModels { get; set; }
 
 
         public ApplicationDbContext(DbContextOptions options) : base(options)
@@ -39,7 +43,8 @@ namespace DAL
             //(EF will auto pluralize names it thinks should be plural, which goes against common data modeling practices)
             foreach (var entityType in builder.Model.GetEntityTypes())
             {
-                entityType.Relational().TableName = $"App{entityType.Name}";
+                if(entityType.DisplayName().Contains("Application") || entityType.DisplayName().Contains("Identity")) continue;
+                entityType.Relational().TableName = $"App{entityType.DisplayName()}";
             }
 
             builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
@@ -79,7 +84,6 @@ namespace DAL
         {
             var modifiedEntries = ChangeTracker.Entries()
                 .Where(x => x.Entity is IAuditableEntity && (x.State == EntityState.Added || x.State == EntityState.Modified));
-
 
             foreach (var entry in modifiedEntries)
             {

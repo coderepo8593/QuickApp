@@ -1,28 +1,37 @@
-﻿// =============================
-// Email: info@ebenmonney.com
-// www.ebenmonney.com/templates
-// =============================
-
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace QuickApp.Migrations
 {
-    public partial class Initial : Migration
+    public partial class InitialModel : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AppCustomers",
+                name: "AppCarMake",
                 columns: table => new
                 {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppCarMake", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppCustomer",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreatedBy = table.Column<string>(maxLength: 256, nullable: true),
                     UpdatedBy = table.Column<string>(maxLength: 256, nullable: true),
                     UpdatedDate = table.Column<DateTime>(nullable: false),
                     CreatedDate = table.Column<DateTime>(nullable: false),
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 100, nullable: false),
                     Email = table.Column<string>(maxLength: 100, nullable: true),
                     PhoneNumber = table.Column<string>(unicode: false, maxLength: 30, nullable: true),
@@ -34,19 +43,19 @@ namespace QuickApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppCustomers", x => x.Id);
+                    table.PrimaryKey("PK_AppCustomer", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AppProductCategories",
+                name: "AppProductCategory",
                 columns: table => new
                 {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreatedBy = table.Column<string>(maxLength: 256, nullable: true),
                     UpdatedBy = table.Column<string>(maxLength: 256, nullable: true),
                     UpdatedDate = table.Column<DateTime>(nullable: false),
                     CreatedDate = table.Column<DateTime>(nullable: false),
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 100, nullable: false),
                     Description = table.Column<string>(maxLength: 500, nullable: true),
                     Icon = table.Column<string>(nullable: true),
@@ -55,7 +64,7 @@ namespace QuickApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppProductCategories", x => x.Id);
+                    table.PrimaryKey("PK_AppProductCategory", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -111,15 +120,36 @@ namespace QuickApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AppProducts",
+                name: "AppCarModel",
                 columns: table => new
                 {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
+                    CarMakeId = table.Column<int>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppCarModel", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Model_Make",
+                        column: x => x.CarMakeId,
+                        principalTable: "AppCarMake",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppProduct",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreatedBy = table.Column<string>(maxLength: 256, nullable: true),
                     UpdatedBy = table.Column<string>(maxLength: 256, nullable: true),
                     UpdatedDate = table.Column<DateTime>(nullable: false),
                     CreatedDate = table.Column<DateTime>(nullable: false),
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(maxLength: 100, nullable: false),
                     Description = table.Column<string>(maxLength: 500, nullable: true),
                     Icon = table.Column<string>(unicode: false, maxLength: 256, nullable: true),
@@ -135,17 +165,17 @@ namespace QuickApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppProducts", x => x.Id);
+                    table.PrimaryKey("PK_AppProduct", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AppProducts_AppProducts_ParentId",
+                        name: "FK_AppProduct_AppProduct_ParentId",
                         column: x => x.ParentId,
-                        principalTable: "AppProducts",
+                        principalTable: "AppProduct",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_AppProducts_AppProductCategories_ProductCategoryId",
+                        name: "FK_AppProduct_AppProductCategory_ProductCategoryId",
                         column: x => x.ProductCategoryId,
-                        principalTable: "AppProductCategories",
+                        principalTable: "AppProductCategory",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -172,15 +202,15 @@ namespace QuickApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AppOrders",
+                name: "AppOrder",
                 columns: table => new
                 {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreatedBy = table.Column<string>(maxLength: 256, nullable: true),
                     UpdatedBy = table.Column<string>(maxLength: 256, nullable: true),
                     UpdatedDate = table.Column<DateTime>(nullable: false),
                     CreatedDate = table.Column<DateTime>(nullable: false),
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Comments = table.Column<string>(maxLength: 500, nullable: true),
                     DateCreated = table.Column<DateTime>(nullable: false),
@@ -190,17 +220,17 @@ namespace QuickApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppOrders", x => x.Id);
+                    table.PrimaryKey("PK_AppOrder", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AppOrders_AspNetUsers_CashierId",
+                        name: "FK_AppOrder_AspNetUsers_CashierId",
                         column: x => x.CashierId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_AppOrders_AppCustomers_CustomerId",
+                        name: "FK_AppOrder_AppCustomer_CustomerId",
                         column: x => x.CustomerId,
-                        principalTable: "AppCustomers",
+                        principalTable: "AppCustomer",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -291,15 +321,15 @@ namespace QuickApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AppOrderDetails",
+                name: "AppOrderDetail",
                 columns: table => new
                 {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreatedBy = table.Column<string>(maxLength: 256, nullable: true),
                     UpdatedBy = table.Column<string>(maxLength: 256, nullable: true),
                     UpdatedDate = table.Column<DateTime>(nullable: false),
                     CreatedDate = table.Column<DateTime>(nullable: false),
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Quantity = table.Column<int>(nullable: false),
                     Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -308,59 +338,74 @@ namespace QuickApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppOrderDetails", x => x.Id);
+                    table.PrimaryKey("PK_AppOrderDetail", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AppOrderDetails_AppOrders_OrderId",
+                        name: "FK_AppOrderDetail_AppOrder_OrderId",
                         column: x => x.OrderId,
-                        principalTable: "AppOrders",
+                        principalTable: "AppOrder",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AppOrderDetails_AppProducts_ProductId",
+                        name: "FK_AppOrderDetail_AppProduct_ProductId",
                         column: x => x.ProductId,
-                        principalTable: "AppProducts",
+                        principalTable: "AppProduct",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppCustomers_Name",
-                table: "AppCustomers",
+                name: "IX_AppCarMake_Name",
+                table: "AppCarMake",
                 column: "Name");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppOrderDetails_OrderId",
-                table: "AppOrderDetails",
-                column: "OrderId");
+                name: "IX_AppCarModel_CarMakeId",
+                table: "AppCarModel",
+                column: "CarMakeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppOrderDetails_ProductId",
-                table: "AppOrderDetails",
-                column: "ProductId");
+                name: "IX_AppCarModel_Name",
+                table: "AppCarModel",
+                column: "Name");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppOrders_CashierId",
-                table: "AppOrders",
+                name: "IX_AppCustomer_Name",
+                table: "AppCustomer",
+                column: "Name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppOrder_CashierId",
+                table: "AppOrder",
                 column: "CashierId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppOrders_CustomerId",
-                table: "AppOrders",
+                name: "IX_AppOrder_CustomerId",
+                table: "AppOrder",
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppProducts_Name",
-                table: "AppProducts",
+                name: "IX_AppOrderDetail_OrderId",
+                table: "AppOrderDetail",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppOrderDetail_ProductId",
+                table: "AppOrderDetail",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppProduct_Name",
+                table: "AppProduct",
                 column: "Name");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppProducts_ParentId",
-                table: "AppProducts",
+                name: "IX_AppProduct_ParentId",
+                table: "AppProduct",
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppProducts_ProductCategoryId",
-                table: "AppProducts",
+                name: "IX_AppProduct_ProductCategoryId",
+                table: "AppProduct",
                 column: "ProductCategoryId");
 
             migrationBuilder.CreateIndex(
@@ -406,7 +451,10 @@ namespace QuickApp.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AppOrderDetails");
+                name: "AppCarModel");
+
+            migrationBuilder.DropTable(
+                name: "AppOrderDetail");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -424,10 +472,13 @@ namespace QuickApp.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "AppOrders");
+                name: "AppCarMake");
 
             migrationBuilder.DropTable(
-                name: "AppProducts");
+                name: "AppOrder");
+
+            migrationBuilder.DropTable(
+                name: "AppProduct");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -436,10 +487,10 @@ namespace QuickApp.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "AppCustomers");
+                name: "AppCustomer");
 
             migrationBuilder.DropTable(
-                name: "AppProductCategories");
+                name: "AppProductCategory");
         }
     }
 }
